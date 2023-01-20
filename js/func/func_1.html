@@ -1,0 +1,39 @@
+<html lang="kr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const log = e => {
+        return console.log(e);
+      };
+
+      /* add_maker */
+      const add_maker = a => {
+        return function (b) {
+          return a + b;
+        };
+      };
+      let add10 = add_maker(10);
+      // log(add10(20));
+
+      function f4(f1, f2, f3) {
+        return f3(f1() + f2());
+      }
+      log(
+        f4(
+          function () {
+            return 5;
+          },
+          function () {
+            return 2;
+          },
+          function (e) {
+            return e * e;
+          }
+        )
+      );
+    </script>
+  </body>
+</html>
