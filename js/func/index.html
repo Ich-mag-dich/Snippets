@@ -1,0 +1,20 @@
+<html lang="kr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const log = e => {
+        return console.log(e);
+      };
+      const add_maker = a => {
+        return function (b) {
+          return a + b;
+        };
+      };
+      let add10 = add_maker(10);
+      // log(add10(20));
+    </script>
+  </body>
+</html>
