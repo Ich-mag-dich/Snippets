@@ -100,24 +100,7 @@
 
       /* 커링 */
       // 1. _curry, _curryr
-      function _curry(fn) {
-        return function (a, b) {
-          return arguments.length == 2
-            ? fn(a, b)
-            : function (b) {
-                return fn(a, b);
-              };
-        };
-      }
-      function _curryr(fn) {
-        return function (a, b) {
-          return arguments.length == 2
-            ? fn(a, b)
-            : function (b) {
-                return fn(b, a);
-              };
-        };
-      }
+
       let add = _curry((a, b) => {
         return a + b;
       });
@@ -137,9 +120,9 @@
       log(sub10(5)); // -5
 
       // 2. _get 만들어 좀 더 간단하게 하기
-      let _get = _curryr(function (obj, key) {
-        return obj == null ? undefined : obj[key];
-      });
+      // let _get = _curryr(function (obj, key) {
+      //   return obj == null ? undefined : obj[key];
+      // });
       log(
         _map(
           _filter(users, function (user) {

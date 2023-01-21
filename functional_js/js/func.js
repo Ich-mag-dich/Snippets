@@ -20,3 +20,24 @@ function _each(list, iter) {
   }
   return list;
 }
+function _curry(fn) {
+  return function (a, b) {
+    return arguments.length == 2
+      ? fn(a, b)
+      : function (b) {
+          return fn(a, b);
+        };
+  };
+}
+function _curryr(fn) {
+  return function (a, b) {
+    return arguments.length == 2
+      ? fn(a, b)
+      : function (b) {
+          return fn(b, a);
+        };
+  };
+}
+let _get = _curryr(function (obj, key) {
+  return obj == null ? undefined : obj[key];
+});
