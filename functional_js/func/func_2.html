@@ -135,6 +135,34 @@
       log(sub(10, 5)); // 5
       let sub10 = sub(10);
       log(sub10(5)); // -5
+
+      // 2. _get 만들어 좀 더 간단하게 하기
+      let _get = _curryr(function (obj, key) {
+        return obj == null ? undefined : obj[key];
+      });
+      log(
+        _map(
+          _filter(users, function (user) {
+            return user.age >= 30;
+          }),
+          _get("name")
+        )
+      );
+      log(
+        _map(
+          _filter(users, function (user) {
+            return user.age < 30;
+          }),
+          _get("age")
+        )
+      );
+
+      // let user1 = users[0];
+      // log(user1.name);
+      // log(_get("name")(user1));
+
+      // log(users[10].name);  // error
+      // log(_get(users[10], "name")); // undefined
     </script>
   </body>
 </html>
