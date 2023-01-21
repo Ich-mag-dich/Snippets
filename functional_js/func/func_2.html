@@ -97,6 +97,44 @@
           return v + 10;
         })
       );
+
+      /* 커링 */
+      // 1. _curry, _curryr
+      function _curry(fn) {
+        return function (a, b) {
+          return arguments.length == 2
+            ? fn(a, b)
+            : function (b) {
+                return fn(a, b);
+              };
+        };
+      }
+      function _curryr(fn) {
+        return function (a, b) {
+          return arguments.length == 2
+            ? fn(a, b)
+            : function (b) {
+                return fn(b, a);
+              };
+        };
+      }
+      let add = _curry((a, b) => {
+        return a + b;
+      });
+      let add10 = add(10);
+      let add5 = add(5);
+      log(add10(5)); // 15
+      log(add(5)(3)); // 8
+      log(add5(3)); // 8
+      log(add(10)(3)); // 13
+      log(add(1, 2)); // 3
+
+      let sub = _curryr((a, b) => {
+        return a - b;
+      });
+      log(sub(10, 5)); // 5
+      let sub10 = sub(10);
+      log(sub10(5)); // -5
     </script>
   </body>
 </html>
