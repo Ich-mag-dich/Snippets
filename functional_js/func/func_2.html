@@ -77,6 +77,26 @@
           }
         )
       );
+
+      /* 외부 다형성 */
+      // 1. array_like, argument, document.querySelectorAll
+
+      log(document.querySelectorAll("*"));
+
+      log(
+        _map(document.querySelectorAll("*"), function (node) {
+          return node.nodeName;
+        })
+      );
+
+      /* 내부 다형성 */
+      // 1. predi, iter, mapper
+
+      log(
+        _map([1, 2, 3, 4], function (v) {
+          return v + 10;
+        })
+      );
     </script>
   </body>
 </html>
