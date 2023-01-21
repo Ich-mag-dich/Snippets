@@ -8,7 +8,7 @@
       const log = a => {
         return console.log(a);
       };
-      log("hello world!");
+      // log("hello world!");
 
       const users = [
         { id: 1, name: "qw", age: 36 },
@@ -20,19 +20,40 @@
         { id: 7, name: "WR", age: 31 },
         { id: 8, name: "OO", age: 23 },
       ];
-      let new_list = [];
-      const _filter = (predi, user) => {
-        if (predi(user)) {
-          new_list.push(user);
+      const _filter = (predi, list) => {
+        let new_list = [];
+        for (let i = 0; i < list.length; i++) {
+          if (predi(list[i])) {
+            new_list.push(list[i]);
+          }
         }
         return new_list;
       };
-      users.map(i => {
-        _filter(function (i) {
-          return i.age >= 30;
-        }, i);
+
+      function _map(list, mapper) {
+        let new_list = [];
+        for (let i = 0; i < list.length; i++) {
+          new_list.push(mapper(list[i]));
+        }
+        return new_list;
+      }
+
+      const over_30 = _filter(function (users) {
+        return users.age >= 30;
+      }, users);
+      log(over_30);
+      let names = _map(over_30, function (user) {
+        return user.name;
       });
-      log(new_list);
+      log(names);
+      let under_30 = _filter(function (users) {
+        return users.age < 30;
+      }, users);
+      log(under_30);
+      let ages = _map(under_30, function (users) {
+        return users.age;
+      });
+      log(ages);
     </script>
   </body>
 </html>
