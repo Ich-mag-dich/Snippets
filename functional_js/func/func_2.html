@@ -4,6 +4,7 @@
     <title>Document</title>
   </head>
   <body>
+    <script type="text/javascript" src="../js/func.js"></script>
     <script>
       const log = a => {
         return console.log(a);
@@ -20,6 +21,7 @@
         { id: 7, name: "WR", age: 31 },
         { id: 8, name: "OO", age: 23 },
       ];
+      /*
       const _filter = (list, predi) => {
         let new_list = [];
         for (let i = 0; i < list.length; i++) {
@@ -37,7 +39,7 @@
         }
         return new_list;
       }
-
+      */
       const over_30 = _filter(users, function (user) {
         return user.age >= 30;
       });
