@@ -12,7 +12,7 @@
 
       const users = [
         { id: 1, name: "qw", age: 36 },
-        { id: 2, name: "asd", age: 32 },
+        { id: 2, name: "XX", age: 32 },
         { id: 3, name: "gg", age: 32 },
         { id: 4, name: "vv", age: 27 },
         { id: 5, name: "cx", age: 25 },
@@ -20,21 +20,19 @@
         { id: 7, name: "WR", age: 31 },
         { id: 8, name: "OO", age: 23 },
       ];
+      let new_list = [];
       const _filter = (predi, user) => {
-        let new_list = [];
-        // log(user);
         if (predi(user)) {
           new_list.push(user);
         }
         return new_list;
       };
-      users.map(i =>
-        log(
-          _filter(function (i) {
-            return i.age >= 30;
-          }, i)
-        )
-      );
+      users.map(i => {
+        _filter(function (i) {
+          return i.age >= 30;
+        }, i);
+      });
+      log(new_list);
     </script>
   </body>
 </html>
