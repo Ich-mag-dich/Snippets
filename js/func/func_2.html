@@ -20,7 +20,7 @@
         { id: 7, name: "WR", age: 31 },
         { id: 8, name: "OO", age: 23 },
       ];
-      const _filter = (predi, list) => {
+      const _filter = (list, predi) => {
         let new_list = [];
         for (let i = 0; i < list.length; i++) {
           if (predi(list[i])) {
@@ -38,22 +38,43 @@
         return new_list;
       }
 
-      const over_30 = _filter(function (users) {
-        return users.age >= 30;
-      }, users);
+      const over_30 = _filter(users, function (user) {
+        return user.age >= 30;
+      });
       log(over_30);
       let names = _map(over_30, function (user) {
         return user.name;
       });
       log(names);
-      let under_30 = _filter(function (users) {
-        return users.age < 30;
-      }, users);
+      let under_30 = _filter(users, function (user) {
+        return user.age < 30;
+      });
       log(under_30);
-      let ages = _map(under_30, function (users) {
-        return users.age;
+      let ages = _map(under_30, function (user) {
+        return user.age;
       });
       log(ages);
+
+      log(
+        _map(
+          _filter(users, function (user) {
+            return user.age >= 30;
+          }),
+          function (user) {
+            return user.name;
+          }
+        )
+      );
+      log(
+        _map(
+          _filter(users, function (user) {
+            return user.age < 30;
+          }),
+          function (user) {
+            return user.name;
+          }
+        )
+      );
     </script>
   </body>
 </html>
