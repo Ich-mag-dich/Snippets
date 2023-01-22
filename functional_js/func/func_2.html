@@ -6,9 +6,7 @@
   <body>
     <script type="text/javascript" src="../js/func.js"></script>
     <script>
-      const log = a => {
-        return console.log(a);
-      };
+      const log = a => console.log(a);
       // log("hello world!");
 
       const users = [
@@ -40,41 +38,25 @@
         return new_list;
       }
       */
-      const over_30 = _filter(users, function (user) {
-        return user.age >= 30;
-      });
+      const over_30 = _filter(users, user => user.age >= 30);
       log(over_30);
-      let names = _map(over_30, function (user) {
-        return user.name;
-      });
+      let names = _map(over_30, user => user.name);
       log(names);
-      let under_30 = _filter(users, function (user) {
-        return user.age < 30;
-      });
+      let under_30 = _filter(users, user => user.age < 30);
       log(under_30);
-      let ages = _map(under_30, function (user) {
-        return user.age;
-      });
+      let ages = _map(under_30, user => user.age);
       log(ages);
 
       log(
         _map(
-          _filter(users, function (user) {
-            return user.age >= 30;
-          }),
-          function (user) {
-            return user.name;
-          }
+          _filter(users, user => user.age >= 30),
+          user => user.name
         )
       );
       log(
         _map(
-          _filter(users, function (user) {
-            return user.age < 30;
-          }),
-          function (user) {
-            return user.age;
-          }
+          _filter(users, user => user.age < 30),
+          user => user.age
         )
       );
 
@@ -83,27 +65,17 @@
 
       log(document.querySelectorAll("*"));
 
-      log(
-        _map(document.querySelectorAll("*"), function (node) {
-          return node.nodeName;
-        })
-      );
+      log(_map(document.querySelectorAll("*"), node => node.nodeName));
 
       /* 내부 다형성 */
       // 1. predi, iter, mapper
 
-      log(
-        _map([1, 2, 3, 4], function (v) {
-          return v + 10;
-        })
-      );
+      log(_map([1, 2, 3, 4], v => v + 10));
 
       /* 커링 */
       // 1. _curry, _curryr
 
-      let add = _curry((a, b) => {
-        return a + b;
-      });
+      let add = _curry((a, b) => a + b);
       let add10 = add(10);
       let add5 = add(5);
       log(add10(5)); // 15
@@ -112,9 +84,7 @@
       log(add(10)(3)); // 13
       log(add(1, 2)); // 3
 
-      let sub = _curryr((a, b) => {
-        return a - b;
-      });
+      let sub = _curryr((a, b) => a - b);
       log(sub(10, 5)); // 5
       let sub10 = sub(10);
       log(sub10(5)); // -5
@@ -125,17 +95,13 @@
       // });
       log(
         _map(
-          _filter(users, function (user) {
-            return user.age >= 30;
-          }),
+          _filter(users, user => user.age >= 30),
           _get("name")
         )
       );
       log(
         _map(
-          _filter(users, function (user) {
-            return user.age < 30;
-          }),
+          _filter(users, user => user.age < 30),
           _get("age")
         )
       );
@@ -147,24 +113,58 @@
       // log(users[10].name);  // error
       // log(_get(users[10], "name")); // undefined
 
-      /* _reduce 만들기 */
-      let slice = Array.prototype.slice;
-      function _rest(list, num) {
-        return slice.call(list, num || 1);
-      }
       console.clear();
-      function _reduce(list, iter, memo) {
-        if (arguments.length == 2) {
-          memo = list[0];
-          list = _rest(list);
-        }
-        _each(list, val => {
-          memo = iter(memo, val);
-        });
-        return memo;
-      }
+      /* _reduce 만들기 */
+      var slice = Array.prototype.slice;
+
       log(_reduce([1, 2, 3, 4], add, 0)); // 10
       log(_reduce([1, 2, 3, 4], add)); // 10
+
+      /* 파이프라인 만들기 */
+      // 1. _pipe
+
+      let f1 = _pipe(
+        a => a + 1,
+        a => a * 2,
+        a => a * a
+      );
+      log(f1(1));
+      // 2. _go
+
+      _go(
+        1,
+        a => a + 1,
+        a => a * 2,
+        a => a * a,
+        console.log
+      );
+
+      // 3. users에 _go 적용
+      log(
+        _map(
+          _filter(users, user => user.age >= 30),
+          _get("name")
+        )
+      );
+      log(
+        _map(
+          _filter(users, user => user.age < 30),
+          _get("age")
+        )
+      );
+
+      _go(
+        users,
+        _filter(user => user.age >= 30),
+        _map(_get("name")),
+        console.log
+      );
+      _go(
+        users,
+        _filter(user => user.age < 30),
+        _map(_get("age")),
+        console.log
+      );
     </script>
   </body>
 </html>
