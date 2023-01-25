@@ -23,3 +23,4 @@ Cargo.lock
 
 ### go ###
 *.exe
+go/test/saved/
