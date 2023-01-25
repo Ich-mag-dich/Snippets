@@ -8,8 +8,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getH1(link, tag string) {
-	res, err := http.Get(link)
+func getH1(url, tag string) *goquery.Selection {
+	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,20 +22,22 @@ func getH1(link, tag string) {
 		log.Fatal(err)
 	}
 	res.Body.Close()
-	doc.Find(tag).Each(func(i int, s *goquery.Selection) {
-		fmt.Printf("%d : %s\n", i, s.Text())
-	})
+	numAndTexts := doc.Find(tag)
+	return numAndTexts
 	// fmt.Printf("%s", body)
 }
 
 func main() {
 	fmt.Println("hello world!")
-	var w1, w2 string
+	var url, tag string
 	fmt.Print("Input Url: ")
-	fmt.Scanln(&w1)
+	fmt.Scanln(&url)
 	fmt.Print("Input tag: ")
-	fmt.Scanln(&w2)
-	getH1(w1, w2)
+	fmt.Scanln(&tag)
+	getH1(url, tag).Each(func(i int, s *goquery.Selection) {
+		fmt.Printf("%d : %s\n", i, s.Text())
+
+	})
 
 	// testdns(w1)
 }
