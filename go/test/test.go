@@ -34,7 +34,6 @@ func getH1(url, tag string) *goquery.Selection {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,7 +44,6 @@ func getH1(url, tag string) *goquery.Selection {
 	res.Body.Close()
 	numAndTexts := doc.Find(tag)
 	return numAndTexts
-	// fmt.Printf("%s", body)
 }
 
 func main() {
