@@ -1,0 +1,31 @@
+{
+    "name": "침하하 미리보기",
+    "description": "창을 이동하지 않고 게시글을 미리 봅니다.",
+    "version": "0.0.1",
+    "manifest_version": 3,
+    
+    "permissions": [
+      "activeTab"
+    ],
+    
+    "host_permissions": [
+      "https://*.chimhaha.net/*",
+      "*://*/*"
+    ],
+    
+    "action": {
+        "default_icon": "./src/img/icon.png",
+        "default_popup": "./popup.html"
+      },
+    "options_page": "options.html",
+    "externally_connectable": {
+    "matches": ["https://*.chimhaha.net/*"]
+    },
+    "content_scripts": [
+      {
+       "matches": ["https://*.chimhaha.net/*"],
+       "js": ["./src/js/contentscript.js"]
+      }
+  ]
+  
+}
