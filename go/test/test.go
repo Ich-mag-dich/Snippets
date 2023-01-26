@@ -68,6 +68,4 @@ func main() {
 	case 3:
 		fmt.Print(getHtml(url))
 	}
-
-	// testdns(w1)
 }
