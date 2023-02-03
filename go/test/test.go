@@ -9,19 +9,15 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func getResp(url string) string {
+func getHtml(url string) *http.Response {
 	res, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return res.Status
+	return res
 }
 
-func getHtml(url string) string {
-	res, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+func getBody(res *http.Response) string {
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +52,7 @@ func main() {
 	fmt.Scanln(&url)
 	switch num {
 	case 1:
-		fmt.Print(getResp(url))
+		fmt.Print(getHtml(url).Status)
 	case 2:
 		fmt.Print("Input tag: ")
 		fmt.Scanln(&tag)
@@ -64,6 +60,6 @@ func main() {
 			fmt.Printf("%d : %s\n", i, s.Text())
 		})
 	case 3:
-		fmt.Print(getHtml(url))
+		fmt.Print(getBody(getHtml(url)))
 	}
 }
