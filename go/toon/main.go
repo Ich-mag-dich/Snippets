@@ -165,19 +165,19 @@ func getImageUrls(titleId string, num int) []string {
 }
 
 func nameReplace(name string) string {
-	var nono [9]string
-	nono[0] = `\`
-	nono[1] = "/"
-	nono[2] = ":"
-	nono[3] = "*"
-	nono[4] = "?"
-	nono[5] = `"`
-	nono[6] = "<"
-	nono[7] = ">"
-	nono[8] = "|"
+	var forbiddenWords [9]string
+	forbiddenWords[0] = `\`
+	forbiddenWords[1] = "/"
+	forbiddenWords[2] = ":"
+	forbiddenWords[3] = "*"
+	forbiddenWords[4] = "?"
+	forbiddenWords[5] = `"`
+	forbiddenWords[6] = "<"
+	forbiddenWords[7] = ">"
+	forbiddenWords[8] = "|"
 	for i := 0; i <= 8; i++ {
-		if isTitleError := strings.Contains(name, nono[i]); isTitleError {
-			name = strings.ReplaceAll(name, nono[i], "")
+		if isTitleError := strings.Contains(name, forbiddenWords[i]); isTitleError {
+			name = strings.ReplaceAll(name, forbiddenWords[i], "")
 		}
 	}
 	return name
