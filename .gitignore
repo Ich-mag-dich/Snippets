@@ -24,3 +24,4 @@ Cargo.lock
 ### go ###
 *.exe
 go/builds/
+go/toon/save/
