@@ -1,3 +1,7 @@
 # Snippets
 
-my code snippets.
+## my code snippets
+
+- go
+- python
+- rust
