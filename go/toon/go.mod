@@ -1,4 +1,4 @@
-module example.com/toon
+module github.com/toon
 
 go 1.20
 
