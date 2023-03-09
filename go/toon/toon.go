@@ -60,7 +60,7 @@ func main() {
 }
 
 func downloadFile(url string, name string) error {
-	fmt.Println(url, name)
+	fmt.Println(url, name, "downloading...")
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -112,7 +112,7 @@ func isThereFolder2(folderName string, childFolderName int) bool {
 
 func getWebtoonTitleId(name string) string {
 	var titleId string
-	url := strings.Join([]string{"https://comic.naver.com/search?keyword=", url.QueryEscape(name)}, "")
+	url := strings.Join([]string{"https://search.naver.com/search.naver?query=", url.QueryEscape(name)}, "")
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -126,14 +126,15 @@ func getWebtoonTitleId(name string) string {
 	}
 	defer res.Body.Close()
 	htmls, _ := goquery.NewDocumentFromReader(res.Body)
-	aTag := htmls.Find("a")
+	aTag := htmls.Find("div.title_area.type_keep._title_area").Find("h2").Find("span.area_text_title").Find("strong").Find("a")
 	aTag.Each(func(i int, s *goquery.Selection) {
 		href, sBool := s.Attr("href")
-		isContain := strings.Contains(href, "/webtoon/list?titleId=")
+
+		isContain := strings.Contains(href, "/webtoon/list.nhn?titleId=")
 		isNotContain := strings.Contains(href, "&no")
 		isSameName := strings.Contains(s.Text(), name)
 		if sBool && isContain && isSameName && !isNotContain {
-			titleId = strings.ReplaceAll(href, "/webtoon/list?titleId=", "")
+			titleId = strings.ReplaceAll(href, "https://comic.naver.com/webtoon/list.nhn?titleId=", "")
 		}
 	})
 	return titleId
@@ -141,7 +142,7 @@ func getWebtoonTitleId(name string) string {
 
 func getImageUrls(titleId string, num int) []string {
 	var imageUrls []string
-	url := strings.Join([]string{"https://comic.naver.com/webtoon/detail.nhn?titleId=", titleId, "&no=", strconv.Itoa(num)}, "")
+	url := strings.Join([]string{"https://comic.naver.com/webtoon/detail?titleId=", titleId, "&no=", strconv.Itoa(num)}, "")
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -151,10 +152,10 @@ func getImageUrls(titleId string, num int) []string {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatal(err)
-	}
+	} // #subTitle_toolbar
 	defer res.Body.Close()
 	htmls, _ := goquery.NewDocumentFromReader(res.Body)
-	title = htmls.Find("div.view").Find("h3").Text()
+	title = htmls.Find("#subTitle_toolbar").Text()
 	title = nameReplace(title)
 	imageTags := htmls.Find("div.wt_viewer").Find("img")
 	imageTags.Each(func(i int, s *goquery.Selection) {
@@ -165,7 +166,7 @@ func getImageUrls(titleId string, num int) []string {
 }
 
 func nameReplace(name string) string {
-	var forbiddenWords [9]string
+	var forbiddenWords [10]string
 	forbiddenWords[0] = `\`
 	forbiddenWords[1] = "/"
 	forbiddenWords[2] = ":"
@@ -175,7 +176,8 @@ func nameReplace(name string) string {
 	forbiddenWords[6] = "<"
 	forbiddenWords[7] = ">"
 	forbiddenWords[8] = "|"
-	for i := 0; i <= 8; i++ {
+	forbiddenWords[9] = " "
+	for i := 0; i <= 9; i++ {
 		if isTitleError := strings.Contains(name, forbiddenWords[i]); isTitleError {
 			name = strings.ReplaceAll(name, forbiddenWords[i], "")
 		}
