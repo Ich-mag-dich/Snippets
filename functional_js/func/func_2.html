@@ -6,7 +6,7 @@
   <body>
     <script type="text/javascript" src="../js/func.js"></script>
     <script>
-      const log = a => console.log(a);
+      const log = (a) => console.log(a);
       // log("hello world!");
 
       const users = [
@@ -38,25 +38,25 @@
         return new_list;
       }
       */
-      const over_30 = _filter(users, user => user.age >= 30);
+      const over_30 = _filter(users, (user) => user.age >= 30);
       log(over_30);
-      let names = _map(over_30, user => user.name);
+      let names = _map(over_30, (user) => user.name);
       log(names);
-      let under_30 = _filter(users, user => user.age < 30);
+      let under_30 = _filter(users, (user) => user.age < 30);
       log(under_30);
-      let ages = _map(under_30, user => user.age);
+      let ages = _map(under_30, (user) => user.age);
       log(ages);
 
       log(
         _map(
-          _filter(users, user => user.age >= 30),
-          user => user.name
+          _filter(users, (user) => user.age >= 30),
+          (user) => user.name
         )
       );
       log(
         _map(
-          _filter(users, user => user.age < 30),
-          user => user.age
+          _filter(users, (user) => user.age < 30),
+          (user) => user.age
         )
       );
 
@@ -65,12 +65,12 @@
 
       log(document.querySelectorAll("*"));
 
-      log(_map(document.querySelectorAll("*"), node => node.nodeName));
+      log(_map(document.querySelectorAll("*"), (node) => node.nodeName));
 
       /* 내부 다형성 */
       // 1. predi, iter, mapper
 
-      log(_map([1, 2, 3, 4], v => v + 10));
+      log(_map([1, 2, 3, 4], (v) => v + 10));
 
       /* 커링 */
       // 1. _curry, _curryr
@@ -95,13 +95,13 @@
       // });
       log(
         _map(
-          _filter(users, user => user.age >= 30),
+          _filter(users, (user) => user.age >= 30),
           _get("name")
         )
       );
       log(
         _map(
-          _filter(users, user => user.age < 30),
+          _filter(users, (user) => user.age < 30),
           _get("age")
         )
       );
@@ -124,44 +124,44 @@
       // 1. _pipe
 
       let f1 = _pipe(
-        a => a + 1,
-        a => a * 2,
-        a => a * a
+        (a) => a + 1,
+        (a) => a * 2,
+        (a) => a * a
       );
       log(f1(1));
       // 2. _go
 
       _go(
         1,
-        a => a + 1,
-        a => a * 2,
-        a => a * a,
+        (a) => a + 1,
+        (a) => a * 2,
+        (a) => a * a,
         console.log
       );
 
       // 3. users에 _go 적용
       log(
         _map(
-          _filter(users, user => user.age >= 30),
+          _filter(users, (user) => user.age >= 30),
           _get("name")
         )
       );
       log(
         _map(
-          _filter(users, user => user.age < 30),
+          _filter(users, (user) => user.age < 30),
           _get("age")
         )
       );
 
       _go(
         users,
-        _filter(user => user.age >= 30),
+        _filter((user) => user.age >= 30),
         _map(_get("name")),
         console.log
       );
       _go(
         users,
-        _filter(user => user.age < 30),
+        _filter((user) => user.age < 30),
         _map(_get("age")),
         console.log
       );

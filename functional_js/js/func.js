@@ -52,7 +52,7 @@ function _reduce(list, iter, memo) {
     memo = list[0];
     list = _rest(list);
   }
-  _each(list, val => {
+  _each(list, (val) => {
     memo = iter(memo, val);
   });
   return memo;
