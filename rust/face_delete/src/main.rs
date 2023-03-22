@@ -8,7 +8,7 @@ use imageproc::rect::Rect;
 use rustface::{Detector, FaceInfo, ImageData};
 
 // let mut output_file: &str = "test.png";
-
+// TODO  인풋폴더, 아웃풋폴더 정해서 인풋폴더에있는 사진들 모두 가리게 반복하는 기능.
 fn main() {
     let mut line = String::new();
     println!("Enter your name :");
