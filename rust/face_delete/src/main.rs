@@ -1,81 +1,71 @@
 use image::{DynamicImage, GrayImage, Rgb};
 use imageproc::drawing::draw_filled_rect_mut;
 use imageproc::rect::Rect;
-use std::fs::read_dir;
-use std::io::Write;
-use std::time::{Duration, Instant};
-use std::{fs, io};
-
 use rustface::{Detector, FaceInfo, ImageData};
-
+use std::fs;
+use std::io::{self, Write};
+use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant};
 fn main() {
     print!("Input image path: ");
     io::stdout().flush().unwrap();
     let mut input_path = String::new();
     io::stdin().read_line(&mut input_path).expect("input error");
-    let input_path = input_path.as_str().trim();
+    let input_path = input_path.trim();
     println!(
         "\n\n------------------------------------------\nimage path is: {}",
         input_path
     );
-    let path = read_dir(&input_path).unwrap();
-    // println!("files: {}", &path.count());
-    let mut file_count = 0;
-    let mut files = vec![];
-    let model_path = "./model/seeta_fd_frontal_v1.0.bin";
-    for i in path {
-        match i {
-            Ok(file) => {
-                if file.file_name() != ".DS_Store" {
-                    let file_type_num = file.file_type();
-                    let file_type_num = match file_type_num {
-                        Ok(num) => num,
-                        Err(_) => panic!(),
-                    };
-
-                    println!(
-                        "------------------------------------------\n● {:?}",
-                        file.file_name()
-                    );
-                    if file_type_num.is_dir() {
-                        println!("this is not image");
-                        continue;
-                    }
-                    file_count += 1;
-                    files.push(file.file_name());
-                }
+    // let files = PathBuf::from(input_path)
+    //     .read_dir()
+    //     .expect("Failed to read directory")
+    //     .filter_map(|entry| {
+    //         let path = &entry.unwrap();
+    //         if path.file_type().unwrap().is_dir() {
+    //             None
+    //         } else {
+    //             if path.path().file_name().unwrap_or_default() == ".DS_Store" {
+    //                 None
+    //             } else {
+    //                 Some(path.path().to_str().unwrap().to_owned())
+    //             }
+    //         }
+    //     })
+    //     .collect::<Vec<String>>();
+    let files = Path::new(input_path)
+        .read_dir()
+        .expect("Failed to read directory")
+        .filter_map(|entry| {
+            let path = entry.ok()?.path();
+            if path.is_dir() || path.file_name()?.to_str()? == ".DS_Store" {
+                None
+            } else {
+                Some(path.to_str()?.to_owned())
             }
-
-            Err(_) => println!("error"),
+        })
+        .collect::<Vec<String>>();
+    let file_count = files.len();
+    println!(
+        "------------------------------------------\nimage count: {}",
+        file_count
+    );
+    let mut detector = match rustface::create_detector("./model/seeta_fd_frontal_v1.0.bin") {
+        Ok(detector) => detector,
+        Err(error) => {
+            println!("Failed to create detector: {}", error.to_string());
+            std::process::exit(1)
         }
-    }
-
-    println!("------------------------------------------\nimage count: {file_count}");
-    let mut count = 0;
-    while count < file_count {
-        let mut detector = match rustface::create_detector(&model_path) {
-            Ok(detector) => detector,
-            Err(error) => {
-                println!("Failed to create detector: {}", error.to_string());
-                std::process::exit(1)
-            }
-        };
-        let file_path = format!("{input_path}{:?}", &files[count]);
-
-        let file_path = file_path.replace("\"", "");
-        println!("\n{}/{file_count}\n{file_path}", &count + 1);
-        detector.set_min_face_size(20);
-        detector.set_max_face_size(400);
-        detector.set_score_thresh(0.9); // first: 2.0, 0.95: found 22 faces
-        detector.set_pyramid_scale_factor(0.9); // 0.8 is found 11 faces, 0.99 is found 14 faces but actually 13 faces
-        detector.set_slide_window_step(4, 4);
-        let image: DynamicImage = match image::open(&file_path) {
-            Ok(image) => image,
-            Err(message) => {
-                println!("Failed to read image: {}", message);
-                std::process::exit(1)
-            }
-        };
+    };
+    detector.set_min_face_size(20);
+    detector.set_max_face_size(500);
+    detector.set_score_thresh(0.8); // first: 2.0, 0.95: found 22 faces
+    detector.set_pyramid_scale_factor(0.9); // 0.8 is found 11 faces, 0.99 is found 14 faces but actually 13 faces
+    detector.set_slide_window_step(4, 4);
+    for (count, file) in files.iter().enumerate() {
+        let file_path = file.replace("\"", "");
+        println!("\n{}/{}\n{}", count + 1, file_count, file_path);
+        let image: DynamicImage = image::open(&file_path)
+            .expect(format!("Failed to read image: {}", &file_path).as_str());
 
         let mut rgb = image.to_rgb8();
         let faces = detect_faces(&mut *detector, &image.to_luma8());
@@ -86,22 +76,26 @@ fn main() {
 
             draw_filled_rect_mut(&mut rgb, rect, Rgb([255, 255, 255]));
         }
-        let output_file = format!(
-            "./save/{input_path}save_{}",
-            &files[count].to_str().unwrap()
-        );
+        let output_file = PathBuf::from(format!(
+            "./save/{}FD_{}",
+            input_path.replace("img/", ""),
+            file.as_str()
+                .replace(&input_path.replace("img/", ""), "")
+                .replace("img/", "")
+        ));
+        // println!("output file -> {}", output_file.display());
         match rgb.save(&output_file) {
-            Ok(_) => println!("Saved result to {}", output_file),
+            Ok(_) => println!("Saved result to {}", output_file.display()),
             Err(message) => {
-                let create_dir_name = format!("./save/{input_path}");
-                fs::create_dir_all(create_dir_name.as_str()).unwrap();
+                let create_dir_name =
+                    PathBuf::from(format!("./save/{}", input_path.replace("img/", "")));
+                fs::create_dir_all(&create_dir_name).expect("Failed to create directory");
                 match rgb.save(&output_file) {
-                    Ok(_) => println!("Save result to {}", output_file),
-                    Err(message2) => println!("can't save file, {}, {}", message, message2),
+                    Ok(_) => println!("Saved result to {}", output_file.display()),
+                    Err(message2) => println!("Can't save file, {}, {}", message, message2),
                 }
             }
         }
-        count += 1;
     }
     println!("\n--------------------------------------------\nDone!");
 }
