@@ -7,15 +7,13 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 fn main() {
+    let line = "------------------------------------------";
     print!("Input image path: ");
     io::stdout().flush().unwrap();
     let mut input_path = String::new();
     io::stdin().read_line(&mut input_path).expect("input error");
     let input_path = input_path.trim();
-    println!(
-        "\n\n------------------------------------------\nimage path is: {}",
-        input_path
-    );
+    println!("\n\n{}\nimage path is: {}", line, input_path);
     let files: Vec<String> = Path::new(input_path)
         .read_dir()
         .expect("Failed to read directory")
@@ -29,10 +27,7 @@ fn main() {
         })
         .collect::<Vec<String>>();
     let file_count = files.len();
-    println!(
-        "------------------------------------------\nimage count: {}",
-        file_count
-    );
+    println!("{}\nimage count: {}", line, file_count);
     let mut detector: Box<dyn Detector> =
         match rustface::create_detector("./model/seeta_fd_frontal_v1.0.bin") {
             Ok(detector) => detector,
@@ -81,7 +76,7 @@ fn main() {
             }
         }
     }
-    println!("\n--------------------------------------------\nDone!");
+    println!("\n{}\nDone!", line);
 }
 
 fn detect_faces(detector: &mut dyn Detector, gray: &GrayImage) -> Vec<FaceInfo> {
