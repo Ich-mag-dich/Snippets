@@ -1,7 +1,7 @@
 use image::{DynamicImage, GrayImage, Rgb};
 use imageproc::drawing::draw_filled_rect_mut;
 use imageproc::rect::Rect;
-use rustface::{Detector, FaceInfo, ImageData};
+use rustface::{Detector, FaceInfo, ImageData, Rectangle};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
@@ -32,7 +32,7 @@ fn main() {
     //         }
     //     })
     //     .collect::<Vec<String>>();
-    let files = Path::new(input_path)
+    let files: Vec<String> = Path::new(input_path)
         .read_dir()
         .expect("Failed to read directory")
         .filter_map(|entry| {
@@ -49,13 +49,14 @@ fn main() {
         "------------------------------------------\nimage count: {}",
         file_count
     );
-    let mut detector = match rustface::create_detector("./model/seeta_fd_frontal_v1.0.bin") {
-        Ok(detector) => detector,
-        Err(error) => {
-            println!("Failed to create detector: {}", error.to_string());
-            std::process::exit(1)
-        }
-    };
+    let mut detector: Box<dyn Detector> =
+        match rustface::create_detector("./model/seeta_fd_frontal_v1.0.bin") {
+            Ok(detector) => detector,
+            Err(error) => {
+                println!("Failed to create detector: {}", error.to_string());
+                std::process::exit(1)
+            }
+        };
     detector.set_min_face_size(20);
     detector.set_max_face_size(500);
     detector.set_score_thresh(0.8); // first: 2.0, 0.95: found 22 faces
@@ -71,12 +72,12 @@ fn main() {
         let faces = detect_faces(&mut *detector, &image.to_luma8());
 
         for face in faces {
-            let bbox = face.bbox();
-            let rect = Rect::at(bbox.x(), bbox.y()).of_size(bbox.width(), bbox.height());
+            let bbox: &Rectangle = face.bbox();
+            let rect: Rect = Rect::at(bbox.x(), bbox.y()).of_size(bbox.width(), bbox.height());
 
             draw_filled_rect_mut(&mut rgb, rect, Rgb([255, 255, 255]));
         }
-        let output_file = PathBuf::from(format!(
+        let output_file: PathBuf = PathBuf::from(format!(
             "./save/{}FD_{}",
             input_path.replace("img/", ""),
             file.as_str()
@@ -87,7 +88,7 @@ fn main() {
         match rgb.save(&output_file) {
             Ok(_) => println!("Saved result to {}", output_file.display()),
             Err(message) => {
-                let create_dir_name =
+                let create_dir_name: PathBuf =
                     PathBuf::from(format!("./save/{}", input_path.replace("img/", "")));
                 fs::create_dir_all(&create_dir_name).expect("Failed to create directory");
                 match rgb.save(&output_file) {
@@ -101,10 +102,10 @@ fn main() {
 }
 
 fn detect_faces(detector: &mut dyn Detector, gray: &GrayImage) -> Vec<FaceInfo> {
-    let (width, height) = gray.dimensions();
-    let mut image = ImageData::new(gray, width, height);
-    let now = Instant::now();
-    let faces = detector.detect(&mut image);
+    let (width, height): (u32, u32) = gray.dimensions();
+    let mut image: ImageData = ImageData::new(gray, width, height);
+    let now: Instant = Instant::now();
+    let faces: Vec<FaceInfo> = detector.detect(&mut image);
     println!(
         "Found {} faces in {} ms",
         faces.len(),
