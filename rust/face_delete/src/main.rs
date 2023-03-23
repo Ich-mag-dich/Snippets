@@ -16,22 +16,6 @@ fn main() {
         "\n\n------------------------------------------\nimage path is: {}",
         input_path
     );
-    // let files = PathBuf::from(input_path)
-    //     .read_dir()
-    //     .expect("Failed to read directory")
-    //     .filter_map(|entry| {
-    //         let path = &entry.unwrap();
-    //         if path.file_type().unwrap().is_dir() {
-    //             None
-    //         } else {
-    //             if path.path().file_name().unwrap_or_default() == ".DS_Store" {
-    //                 None
-    //             } else {
-    //                 Some(path.path().to_str().unwrap().to_owned())
-    //             }
-    //         }
-    //     })
-    //     .collect::<Vec<String>>();
     let files: Vec<String> = Path::new(input_path)
         .read_dir()
         .expect("Failed to read directory")
@@ -59,8 +43,8 @@ fn main() {
         };
     detector.set_min_face_size(20);
     detector.set_max_face_size(500);
-    detector.set_score_thresh(0.8); // first: 2.0, 0.95: found 22 faces
-    detector.set_pyramid_scale_factor(0.9); // 0.8 is found 11 faces, 0.99 is found 14 faces but actually 13 faces
+    detector.set_score_thresh(0.8); // default: 2.0
+    detector.set_pyramid_scale_factor(0.9); // max: 0.99
     detector.set_slide_window_step(4, 4);
     for (count, file) in files.iter().enumerate() {
         let file_path = file.replace("\"", "");
@@ -84,7 +68,6 @@ fn main() {
                 .replace(&input_path.replace("img/", ""), "")
                 .replace("img/", "")
         ));
-        // println!("output file -> {}", output_file.display());
         match rgb.save(&output_file) {
             Ok(_) => println!("Saved result to {}", output_file.display()),
             Err(message) => {
